@@ -86,8 +86,6 @@ const createEmail = (email, token) => {
                 <a href="${url_api}/auth/activate/${token}" style="color: white;" class="auth-button">Activate Account</a>
                 <p>
                     If you don't feel like registering an account in the Food Recipes App, ignore this email.
-                    <br>
-                    Alternative link: <a href="${url_api}/auth/activate/${token}">${url_api}/auth/activate/${token}</a>
                 </p>
                 <hr>
                 <p>Copyright &copy; ${new Date().getFullYear()} Food Recipes App - Developed with <span style="color: red !important;">🔥</span> by <a style="text-decoration: none;" href="https://github.com/rikimuhammadasli021299" target="_blank">Riki Muhammad Nurhidayat</a> in Tasik Rock City</p>
