@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const createEmail = (email, token) => {
+const createEmail = (email, token, otp) => {
   return {
     from: process.env.MAIL_FROM,
     to: email,
@@ -81,9 +81,9 @@ const createEmail = (email, token) => {
                 <p>
                     You received this email because you have registered an account in the Food Recipes App.
                     <br>
-                    Immediately activate your account by clicking the button below.
+                    Please input the code below to acitvate your account.
                 </p>
-                <a href="${url_api}/auth/activate/${token}" style="color: white;" class="auth-button">Activate Account</a>
+                <a href="#" style="color: white; letter-spacing: 7px; text-align: center" class="auth-button">${otp}</a>
                 <p>
                     If you don't feel like registering an account in the Food Recipes App, ignore this email.
                 </p>
@@ -96,9 +96,9 @@ const createEmail = (email, token) => {
   };
 };
 
-const sendMail = (email, token) => {
+const sendMail = (email, token, otp) => {
   return new Promise((resolve, reject) => {
-    transporter.sendMail(createEmail(email, token), (err, info) => {
+    transporter.sendMail(createEmail(email, token, otp), (err, info) => {
       if (err) {
         console.log(err);
         reject(err);

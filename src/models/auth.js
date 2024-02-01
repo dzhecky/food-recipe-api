@@ -1,9 +1,9 @@
 const Pool = require('../config/db');
 
 const createUser = async (data) => {
-  const { name, email, passwordHashed, uuid } = data;
+  const { name, email, passwordHashed, uuid, otp } = data;
   return new Promise((resolve, reject) => {
-    Pool.query(`INSERT INTO users (name, email, password, created_time, updated_time, uuid) VALUES ('${name}', '${email}', '${passwordHashed}', current_timestamp, current_timestamp, '${uuid}')`, (err, result) => {
+    Pool.query(`INSERT INTO users (name, email, password, created_time, updated_time, uuid, otp) VALUES ('${name}', '${email}', '${passwordHashed}', current_timestamp, current_timestamp, '${uuid}', ${otp})`, (err, result) => {
       if (!err) {
         return resolve(result);
       } else {
@@ -37,9 +37,9 @@ const checkUserIsActive = async (uuid) => {
   });
 };
 
-const activateUser = async (uuid) => {
+const activateUser = async (uuid, otp) => {
   return new Promise((resolve, reject) => {
-    Pool.query(`UPDATE users SET is_active=true WHERE uuid='${uuid}'`, (err, result) => {
+    Pool.query(`UPDATE users SET is_active=true WHERE uuid='${uuid}' AND otp=${otp}`, (err, result) => {
       if (!err) {
         return resolve(result);
       } else {

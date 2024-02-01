@@ -9,6 +9,7 @@ const { sendOtpToMail } = require('../utils/sendOtpToEmail');
 const authController = {
   register: async (req, res) => {
     let { name, email, password } = req.body;
+    let otp = Math.floor(Math.random() * 90000) + 10000;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -29,7 +30,7 @@ const authController = {
 
     //   hash password
     let passwordHashed = await bcrypt.hash(password, 10);
-    let data = { name, email, passwordHashed, uuid: uuidv4() };
+    let data = { name, email, passwordHashed, uuid: uuidv4(), otp };
     await createUser(data);
 
     if (!data) {
@@ -41,7 +42,7 @@ const authController = {
 
     // Activation Email
     let user = await getUserByEmail(data.email);
-    let sendEmailToUser = await sendMail(user.rows[0].email, user.rows[0].uuid);
+    let sendEmailToUser = await sendMail(user.rows[0].email, user.rows[0].uuid, otp);
 
     if (!sendEmailToUser) {
       await createUser.rollback();
@@ -55,11 +56,13 @@ const authController = {
     res.status(200).json({
       code: 200,
       message: 'Register success, please check your email to activate!',
+      uuid: user.rows[0].uuid,
     });
   },
 
   setActivateUser: async (req, res, next) => {
     let id_user = req.params.id;
+    let otp = req.body.otp;
     let checkUser = await checkUserIsActive(id_user);
 
     if (checkUser.rows.length === 0) {
@@ -69,7 +72,25 @@ const authController = {
       });
     }
 
-    await activateUser(checkUser.rows[0].uuid);
+    if (!otp) {
+      return res.status(400).json({
+        code: 400,
+        message: 'OTP is required',
+      });
+    }
+
+    let checkUserByOTP = await getUserByOtp(otp);
+    if (checkUserByOTP.rows.length === 0) {
+      return res.status(400).json({
+        code: 400,
+        message: 'Code OTP Wrong!',
+      });
+    }
+
+    await activateUser(checkUser.rows[0].uuid, otp);
+
+    // reset code otp
+    await resetOtpByUserEmail(checkUser.rows[0].email);
 
     res.status(200).json({
       code: 200,
