@@ -24,8 +24,5 @@
   "description": "api for food recipe app",
   "main": "server.js",
   "author": "rikimuhammad",
-  "license": "ISC",
-  "engines": {
-    "node": "v18.18.2"
-  }
+  "license": "ISC"
 }
